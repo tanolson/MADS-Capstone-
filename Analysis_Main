@@ -1,1 +1,129 @@
+# Imports packages 
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
+import statsmodels.formula.api as smf
+from sklearn import linear_model
+from matplotlib import pyplot as plt
+
+# install synthetic control package 
+pip install SyntheticControlMethods
+
+#  synthetic control package requires scipy 1.4.1 
+import scipy
+print(scipy.__version__)
+
+!pip install scipy==1.4.1
+
+# connect google colab to drive files to connect to csv files 
+from google.colab import files
+from google.colab import drive
+drive.mount('/drive')
+
+#import Synth and create dataframes for both the 5 and 10 feature datasets 
+import pandas as pd
+import numpy as np
+import scipy
+from SyntheticControlMethods import Synth, DiffSynth
+
+data_5 = pd.read_csv('/drive/My Drive/Cell_Phone_DF5.csv')
+data_10 = pd.read_csv('/drive/My Drive/Cell_Phone_DF10.csv')
+
+data_5.head()
+data_10.head()
+
+#split out year and turn into int as column is currently a string e.g. 2015-2016
+data_5['first_year'] = data_5.schoolyear.apply(lambda x: x[:4])
+data_5["first_year"] = data_5["first_year"].astype(str).astype(int)
+
+data_10['first_year'] = data_10.schoolyear.apply(lambda x: x[:4])
+data_10["first_year"] = data_10["first_year"].astype(str).astype(int)
+
+
+#rename columns to make them easier to understand 
+data_5.rename(columns = {'first_year':'year', 'Estimate Total Living in household with Supplemental Security Income (SSI), cash public assistance income, or Food Stamps/SNAP in the past 12 months':'gov_aid', 'fundbalanceas%ofexpenditure':'balance_of_expenditure', 'Estimate Median household income in the past 12 months (in 2018 inflation-adjusted dollars)':'median_income'}, inplace = True)
+data_10.rename(columns = {'first_year':'year', 'Estimate Total Living in household with Supplemental Security Income (SSI), cash public assistance income, or Food Stamps/SNAP in the past 12 months':'gov_aid', 'fundbalanceas%ofexpenditure':'balance_of_expenditure', 'Estimate Median household income in the past 12 months (in 2018 inflation-adjusted dollars)':'median_income',"Estimate Total Bachelor's degree": "Bachelor degree", "Estimate Total Master's degree" : "Master degree" }, inplace = True)
+
+data_5.head()
+data_10.head()
+
+#drop columns that will not be used in the model 
+data_5.drop(['Unnamed: 0', 'schoolyear','districtcode'] ,axis=1, inplace=True)
+data_10.drop(['Unnamed: 0', 'schoolyear','districtcode','english_language_learners_enrollment.1'] ,axis=1, inplace=True)
+
+data_5.head()
+data_10.head()
+
+#check years 
+data_5['year'].unique()
+
+#Build synthetic control models based off of the two DFs. Variables in model inlcude Dependent 8th_math_percentmet, Identifiers to split between control and treatment 1) districtname and 2) year  
+sc_5 = Synth(data_5, "8th_math_percentmet", "districtname", "year", 2019, 'Forest Hills Public Schools', n_optim=10, pen="auto", random_seed=0)
+sc_10 = Synth(data_10, "8th_math_percentmet", "districtname", "year", 2019, 'Forest Hills Public Schools', n_optim=10, pen="auto", random_seed=0)
+
+#Import matplotlib and set style of graphs 
+import matplotlib.pyplot as plt
+
+plt.style.use('fivethirtyeight')
+
+#plot synthetic control for 5 feature model 
+sc_5.plot(["original", "pointwise", "cumulative"], treated_label="Forest Hills Public Schools", 
+            synth_label="Synthetic Control", treatment_label="Cellphone Ban")
+
+
+#plot synthetic control for 10 feature model 
+
+sc_10.plot(["original", "pointwise", "cumulative"], treated_label="Forest Hills Public Schools", 
+            synth_label="Synthetic Control", treatment_label="Cellphone Ban")
+            
+# Districts identified for 5-feature model synthetic control 
+sc_5.original_data.weight_df
+
+# Districts identified for 10-feature model synthetic control 
+sc_10.original_data.weight_df
+
+sc_5.original_data.rmspe_df
+sc_10.original_data.rmspe_df
+
+# Breakdown of 5-feature model similarities between control and treatment group 
+sc_5.original_data.comparison_df
+
+# Breakdown of 10-feature model similarities between control and treatment group 
+sc_10.original_data.comparison_df
+
+#In-time placebo set at 2017 (1 year prior to actual treatment). Placebo helps verify actual synthetic control is not a fluke 
+sc_5.in_time_placebo(2017, n_optim=50)
+
+#Visualize
+sc_5.plot(['in-time placebo'], 
+            treated_label="Forest Hills Public Schools",
+            synth_label="Synthetic Control")
+            
+#In-time placebo set at 2017 (1 year prior to actual treatment). Placebo helps verify actual synthetic control is not a fluke 
+
+sc_10.in_time_placebo(2017, n_optim=50)
+
+#Visualize
+sc_10.plot(['in-time placebo'], 
+            treated_label="Forest Hills Public Schools",
+            synth_label="Synthetic Control")
+            
+            
+# visualize treatment and control shools average math schools over the years 
+ax = plt.subplot(1, 1, 1)
+data_5['Forest_Hill'] = data_5['districtname'] =='Forest Hills Public Schools'
+(data_5.assign(forest = np.where(data_5["Forest_Hill"], "Forest Hill Public", "Other District"))
+ .groupby(["year", "Forest_Hill"])
+ ["8th_math_percentmet"]
+ .mean()
+ .reset_index()
+ .pivot("year", "Forest_Hill", "8th_math_percentmet")
+ .plot(ax=ax, label='Roll', figsize=(10,5)))
+
+plt.vlines(x=2018, ymin=40, ymax=100, linestyle=":", lw=2, label="Cell Phone Ban")
+plt.xlabel("year")
+plt.ylabel("Math Scores")
+plt.title("Mean Math Scores for Treatment and Control")
+plt.legend();              
 
