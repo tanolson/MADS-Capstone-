@@ -24,4 +24,4 @@ The code should produce several charts including this one which demonstrates the
 
 <img width="1196" alt="image" src="https://user-images.githubusercontent.com/55987309/186026354-f2e0ea19-30b8-48c2-95a5-a5fb81e3a915.png">
 
-The data that the code accesses is contained in the 1_CSV_Data folder. The Michigan school district data came from the [MI School Data](https://www.mischooldata.org/k-12-data-files/) site run by the State of Michigan. The data from the American Community Survey is generator within the 2_ACS_Demographic_Data.ipynb notebook. 
+The data that the code accesses is contained in the 1_CSV_Data folder. The Michigan school district data came from the [MI School Data](https://www.mischooldata.org/k-12-data-files/) site run by the State of Michigan. The data from the American Community Survey is generator within the 2_ACS_Demographic_Data.ipynb notebook. The 'Blog_Post.pdf' describes how the data was cleaned.
