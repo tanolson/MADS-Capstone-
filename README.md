@@ -8,5 +8,7 @@ This project considers whether a causal relationship exists between banning cell
 The SyntheticControlMethods package used in our code requires SciPy 1.4.1 which most likely is a downgrade for most users and requires the kernel to be restarted after the install.
 
 Packages
+
 Pip install SyntheticControlMethods
+
 Pip install scipy==1.4.1
