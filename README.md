@@ -14,3 +14,7 @@ Pip install SyntheticControlMethods
 Pip install scipy==1.4.1
 
 Pip install Census Data API
+
+The code is contained in 3 Jupyter notebooks and need to run in order: 2_ACS_Demographic_Data.ipynb, 3_Clean_MI_Academic_Data.ipynb, 4_Cell_Phone_Ban.ipynb. The code should produce several charts including this one which demonstrates the difference between the school district with a cell phone ban and the synthetic control group which did not institute a cell phone ban.
+
+https://github.com/tanolson/MADS-Capstone-/blob/main/MADS_Cell_Phone_Chart.png
