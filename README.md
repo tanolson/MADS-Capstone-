@@ -5,10 +5,12 @@ Effect of phone ban on school test scores in Michigan
 
 This project considers whether a causal relationship exists between banning cell phones in Michigan public school districts and students' academic scores on standardized math tests. We used the Synthetic Control Method to analyze the impact cell phone bans had on student achievement. 
 
-The SyntheticControlMethods package used in our code requires SciPy 1.4.1 which most likely is a downgrade for most users and requires the kernel to be restarted after the install.
+The SyntheticControlMethods package used in our code requires SciPy 1.4.1 which most likely is a downgrade for most users and requires the kernel to be restarted after the install. The Census Data API is another specialized package that requires a Pip install and a key. The key has been requested and is in the code and functions at the time of this writing.
 
 Packages
 
 Pip install SyntheticControlMethods
 
 Pip install scipy==1.4.1
+
+Pip install Census Data API
